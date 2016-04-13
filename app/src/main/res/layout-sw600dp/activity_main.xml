@@ -21,10 +21,27 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:name="www.meeteor.me.popularmovies.movies.MoviesFragment"
-        android:id="@+id/poster_fragment_container"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:baselineAligned="false">
+        <fragment
+            android:id="@+id/poster_fragment_container"
+            android:name="www.meeteor.me.popularmovies.movies.MoviesFragment"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            tools:layout="@layout/poster_fragment" />
+        <FrameLayout
+            android:id="@+id/movie_detail_fragment_container"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginTop="42dp"
+            android:layout_weight="3"/>
+
+
+    </LinearLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>

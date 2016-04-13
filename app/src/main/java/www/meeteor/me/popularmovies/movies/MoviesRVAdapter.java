@@ -1,5 +1,4 @@
-package www.meeteor.me.popularmovies;
-
+package www.meeteor.me.popularmovies.movies;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -12,25 +11,26 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import www.meeteor.me.popularmovies.R;
+import www.meeteor.me.popularmovies.data.Movie;
+
 /**
- * Created by meet on 28/3/16.
- *
+ * Created by meet on 9/4/16.
  */
-public class PosterRVAdapter extends RecyclerView.Adapter<PosterRVAdapter.ViewHolder>{
+class MoviesRVAdapter extends RecyclerView.Adapter<MoviesRVAdapter.ViewHolder> {
 
 
     private List<Movie> mMovieList;
-    public PosterRVAdapter(List<Movie> mMovieList)  {
-       this.mMovieList = mMovieList;
+    private MoviesFragment.MovieItemListener movieItemListener;
 
+    public MoviesRVAdapter(List<Movie> mMovieList, MoviesFragment.MovieItemListener movieItemListener) {
+        this.mMovieList = mMovieList;
+        this.movieItemListener = movieItemListener;
     }
 
 
-
-
-
     @Override
-    public PosterRVAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
@@ -42,9 +42,9 @@ public class PosterRVAdapter extends RecyclerView.Adapter<PosterRVAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(PosterRVAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Movie movie = mMovieList.get(position);
-        String imgStr = "https://image.tmdb.org/t/p/w185" + movie.posterUrl;
+        String imgStr = "https://image.tmdb.org/t/p/w185" + movie.getPosterPath();
         //Log.d("ImgStr",imgStr);
         Picasso.with(holder.posterImage.getContext()).load(imgStr).placeholder(R.mipmap.ic_launcher).into(holder.posterImage);
     }
@@ -54,12 +54,21 @@ public class PosterRVAdapter extends RecyclerView.Adapter<PosterRVAdapter.ViewHo
         return mMovieList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView posterImage;
+
         public ViewHolder(View itemView) {
             super(itemView);
-
             posterImage = (ImageView) itemView.findViewById(R.id.poster_view);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            Movie movie = mMovieList.get(position);
+            movieItemListener.onMovieClick(movie);
+
         }
     }
 
