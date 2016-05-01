@@ -9,10 +9,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import www.meeteor.me.popularmovies.R;
 import www.meeteor.me.popularmovies.data.Movie;
 import www.meeteor.me.popularmovies.util.Constants;
@@ -21,10 +24,20 @@ import www.meeteor.me.popularmovies.util.Constants;
  * Created by meet on 30/3/16.
  */
 public class MovieDetailActivity extends AppCompatActivity {
+
+    @Bind(R.id.movie_title) TextView movieTitle;
+    @Bind(R.id.movie_overview) TextView movieOverview;
+    @Bind(R.id.movie_rating) RatingBar movieRating;
+    @Bind(R.id.backdrop_poster) ImageView movieBackdropPoster;
+    @Bind(R.id.movie_release_date) TextView movieReleaseDate;
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ButterKnife.bind(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -35,19 +48,24 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         Movie movie = getIntent().getParcelableExtra("Movie");
-        ImageView imageView = (ImageView) findViewById(R.id.backdrop_poster);
-        TextView textView = (TextView) findViewById(R.id.movie_overview);
-        String imgStr = Constants.IMAGE_BASE_URL+Constants.BACKDROP_IMAGE_SIZE+Constants.BACKSLASH + movie.getBackdropPath();
-        CollapsingToolbarLayout collapsingToolbar =
-                (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        if (collapsingToolbar != null) {
-            collapsingToolbar.setTitle(movie.getTitle());
 
-        }
-        Picasso.with(this).load(imgStr).placeholder(R.mipmap.ic_launcher).into(imageView);
-        if (textView != null) {
-            textView.setText(movie.getOverview());
-        }
+        setUpDetailUI(movie);
+
+
+
+    }
+
+    private void setUpDetailUI(Movie movie) {
+        String imageUrlString = Constants.IMAGE_BASE_URL+Constants.BACKDROP_IMAGE_SIZE+Constants.BACKSLASH + movie.getBackdropPath();
+
+        mCollapsingToolbar.setTitle(movie.getTitle());
+        Picasso.with(this).load(imageUrlString).placeholder(R.mipmap.ic_launcher).into(movieBackdropPoster);
+        movieTitle.setText(movie.getOriginalTitle());
+        movieOverview.setText(movie.getOverview());
+        float voteAverage = (float) movie.getVoteAverage()/2;
+        movieRating.setRating(voteAverage);
+        String releaseDate = "Release date: "+ movie.getReleaseDate();
+        movieReleaseDate.setText(releaseDate);
     }
 
     @Override
@@ -75,6 +93,5 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
     }
 }

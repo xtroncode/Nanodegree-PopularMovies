@@ -1,4 +1,4 @@
-package www.meeteor.me.popularmovies;
+package www.meeteor.me.popularmovies.data;
 
 import android.os.AsyncTask;
 
@@ -14,18 +14,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 
-import www.meeteor.me.popularmovies.data.Movie;
 import www.meeteor.me.popularmovies.util.Constants;
 
 /**
  * Created by meet on 1/4/16.
  */
-public class PosterTask extends AsyncTask<Integer, Void, JSONArray> {
+public class GetMoviesTask extends AsyncTask<Integer, Void, JSONArray> {
 
     private WeakReference<OnExecutionComplete> listener;
-    public PosterTask(OnExecutionComplete listener) {
+    private String SORT_PARAMETER;
+    public GetMoviesTask(OnExecutionComplete listener, String SORT_PARAMETER) {
         super();
         this.listener = new WeakReference<>(listener);
+        this.SORT_PARAMETER = SORT_PARAMETER;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class PosterTask extends AsyncTask<Integer, Void, JSONArray> {
 
         URL url;
         try {
-            url = new URL("http://api.themoviedb.org/3/movie/popular?api_key="+ Constants.MOVIEDB_API_KEY+"&page="+params[0].toString());
+            url = new URL("http://api.themoviedb.org/3/movie/"+SORT_PARAMETER+"?api_key="+ Constants.MOVIEDB_API_KEY+"&page="+params[0].toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000 /* milliseconds */);
             conn.setConnectTimeout(15000 /* milliseconds */);
@@ -65,14 +66,16 @@ public class PosterTask extends AsyncTask<Integer, Void, JSONArray> {
     protected void onPostExecute(JSONArray jsonArray) {
         super.onPostExecute(jsonArray);
         ArrayList<Movie> arrayList = new ArrayList<>();
-        for (int i = 0;i<jsonArray.length();i++ ){
-            try {
-                arrayList.add(new Movie(jsonArray.getJSONObject(i)));
-            } catch (JSONException e) {
-                e.printStackTrace();
+        if(jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    arrayList.add(new Movie(jsonArray.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+            listener.get().handleAsyncResponse(arrayList);
         }
-        listener.get().handleAsyncResponse(arrayList);
 
     }
 

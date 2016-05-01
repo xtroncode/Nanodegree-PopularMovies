@@ -37,7 +37,8 @@ public final class Movie implements Parcelable {
         backdropPath = movie.getString("backdrop_path");
         adult = movie.getBoolean("adult");
         id = movie.getInt("id");
-        originalLanguage = movie.getString("original_title");
+        originalTitle = movie.getString("original_title");
+        originalLanguage = movie.getString("original_language");
         popularity = movie.getDouble("popularity");
         voteCount = movie.getInt("vote_count");
         voteAverage =  movie.getDouble("vote_average");
@@ -64,7 +65,7 @@ public final class Movie implements Parcelable {
         popularity = in.readDouble();
         voteCount = in.readInt();
         video = in.readByte() != 0;
-        voteAverage = in.readFloat();
+        voteAverage = in.readDouble();
         releaseDate = in.readString();
     }
 

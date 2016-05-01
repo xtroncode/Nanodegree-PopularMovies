@@ -17,6 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import www.meeteor.me.popularmovies.R;
 import www.meeteor.me.popularmovies.data.Movie;
+import www.meeteor.me.popularmovies.util.Constants;
 
 /**
  * Created by meet on 8/4/16.
@@ -26,10 +27,13 @@ public class MovieDetailFragment extends Fragment {
     private static final String ARG_PARAM = "Movie";
     private Movie movie;
 
+    @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.movie_title) TextView movieTitle;
     @Bind(R.id.movie_overview) TextView movieOverview;
     @Bind(R.id.movie_rating) RatingBar movieRating;
+    @Bind(R.id.movie_release_date) TextView movieReleaseDate;
     @Bind(R.id.backdrop_poster) ImageView movieBackdropPoster;
+
 
     public static MovieDetailFragment newInstance(Movie movie) {
         MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
@@ -57,21 +61,11 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.movie_detail_fragment,container,false);
+
         ButterKnife.bind(this,view);
+
         if(movie != null) {
-
-            String imgStr = "https://image.tmdb.org/t/p/w342" + movie.getBackdropPath();
-            CollapsingToolbarLayout collapsingToolbar =
-                    (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
-            if (collapsingToolbar != null) {
-                collapsingToolbar.setTitle(movie.getTitle());
-
-            }
-            Picasso.with(getContext()).load(imgStr).placeholder(R.mipmap.ic_launcher).into(movieBackdropPoster);
-            movieTitle.setText(movie.getOriginalTitle());
-            movieOverview.setText(movie.getOverview());
-            movieRating.setRating((float) movie.getVoteAverage()/2);
-
+            setUpDetailUI();
             getActivity().setTitle(movie.getTitle());
             view.setVisibility(View.VISIBLE);
         }
@@ -80,4 +74,18 @@ public class MovieDetailFragment extends Fragment {
         }
         return view;
     }
+
+    private void setUpDetailUI() {
+        String imageUrlString = Constants.IMAGE_BASE_URL+Constants.BACKDROP_IMAGE_SIZE+Constants.BACKSLASH + movie.getBackdropPath();
+
+        mCollapsingToolbar.setTitle(movie.getTitle());
+        Picasso.with(getContext()).load(imageUrlString).placeholder(R.mipmap.ic_launcher).into(movieBackdropPoster);
+        movieTitle.setText(movie.getOriginalTitle());
+        movieOverview.setText(movie.getOverview());
+        float voteAverage = (float) movie.getVoteAverage()/2;
+        movieRating.setRating(voteAverage);
+        String releaseDate = "Release date: "+ movie.getReleaseDate();
+        movieReleaseDate.setText(releaseDate);
+    }
+
 }
