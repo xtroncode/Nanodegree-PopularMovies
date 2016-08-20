@@ -16,28 +16,28 @@
         android:id="@+id/collapsing_toolbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         app:contentScrim="?attr/colorPrimary"
         app:expandedTitleMarginEnd="64dp"
         app:expandedTitleMarginStart="48dp"
-        app:layout_scrollFlags="scroll|exitUntilCollapsed"
-        android:fitsSystemWindows="true">
+        app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
         <ImageView
             android:id="@+id/backdrop_poster"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"
+            android:contentDescription="@string/backdrop_poster"
             android:fitsSystemWindows="true"
-            app:layout_collapseMode="parallax"
-            android:contentDescription="@string/backdrop_poster" />
+            android:scaleType="centerCrop"
+            app:layout_collapseMode="parallax" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
             app:layout_collapseMode="pin"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
             />
 
 
@@ -46,6 +46,13 @@
 
 
     <include layout="@layout/movie_detail"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin" />
 
 
 </android.support.design.widget.CoordinatorLayout>

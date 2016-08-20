@@ -1,13 +1,17 @@
 package www.meeteor.me.popularmovies.moviedetail;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -18,6 +22,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import www.meeteor.me.popularmovies.R;
 import www.meeteor.me.popularmovies.data.Movie;
+import www.meeteor.me.popularmovies.data.MovieContract;
 import www.meeteor.me.popularmovies.util.Constants;
 
 /**
@@ -31,7 +36,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Bind(R.id.backdrop_poster) ImageView movieBackdropPoster;
     @Bind(R.id.movie_release_date) TextView movieReleaseDate;
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
-
+    @Bind(R.id.fab)
+    FloatingActionButton mFab;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,17 +53,51 @@ public class MovieDetailActivity extends AppCompatActivity {
             actionBar.setDisplayShowHomeEnabled(true);
         }
 
-        Movie movie = getIntent().getParcelableExtra("Movie");
+        final Movie movie = getIntent().getParcelableExtra("Movie");
 
         setUpDetailUI(movie);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (movie.isFavorite) {
+                    movie.isFavorite = false;
+                    deleteMovieFromFavorite(movie);
+                    mFab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                } else {
+                    addMovieToFavorite(movie);
+                    mFab.setImageResource(R.drawable.ic_favorite_red_a700_24dp);
+                    movie.isFavorite = true;
+                }
+            }
+        });
 
 
 
     }
 
+    private void addMovieToFavorite(Movie movie) {
+        ContentValues movieValues = new ContentValues();
+        movieValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie.getId());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_TITLE, movie.getTitle());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_ORIGINAL_TITLE, movie.getOriginalTitle());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_OVERVIEW, movie.getOverview());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate());
+        movieValues.put(MovieContract.MovieEntry.COLUMN_BACKDROP_PATH, movie.getBackdropPath());
+
+        getContentResolver().insert(MovieContract.MovieEntry.CONTENT_URI, movieValues);
+
+    }
+
+    private void deleteMovieFromFavorite(Movie movie) {
+        getContentResolver().delete(MovieContract.MovieEntry.buildMovieUri(movie.getId()), "movie_id=" + Integer.toString(movie.getId()), null);
+        Log.d("M", "deleted from fav");
+    }
+
     private void setUpDetailUI(Movie movie) {
         String imageUrlString = Constants.IMAGE_BASE_URL+Constants.BACKDROP_IMAGE_SIZE+Constants.BACKSLASH + movie.getBackdropPath();
-
         mCollapsingToolbar.setTitle(movie.getTitle());
         Picasso.with(this).load(imageUrlString).placeholder(R.mipmap.ic_launcher).into(movieBackdropPoster);
         movieTitle.setText(movie.getOriginalTitle());
@@ -66,7 +106,14 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieRating.setRating(voteAverage);
         String releaseDate = "Release date: "+ movie.getReleaseDate();
         movieReleaseDate.setText(releaseDate);
+        movie.isFavorite = getContentResolver().query(MovieContract.MovieEntry.buildMovieUri(movie.getId()), null, null, null, null).getCount() != 0;
+        if (movie.isFavorite) {
+            mFab.setImageResource(R.drawable.ic_favorite_red_a700_24dp);
+        } else {
+            mFab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+        }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

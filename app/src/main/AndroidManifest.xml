@@ -7,10 +7,10 @@
 
     <application
         android:allowBackup="true"
+        android:allowClearUserData="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:allowClearUserData="true"
         android:theme="@style/AppTheme">
         <activity
             android:name=".movies.MoviesActivity"
@@ -27,8 +27,12 @@
             android:name=".moviedetail.MovieDetailActivity"
             android:label="@string/app_name"
             android:parentActivityName=".movies.MoviesActivity"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
 
+        <provider
+            android:name=".data.MovieProvider"
+            android:authorities="www.meeteor.me.popularmovies"
+            android:exported="false"></provider>
     </application>
 
 </manifest>

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_sortBy"
-        app:showAsAction="always"
         android:icon="@drawable/ic_filter_list_black_24dp"
-        android:title="@string/sort_by" >
+        android:title="@string/sort_by"
+        app:showAsAction="always">
 
         <menu>
             <item
@@ -15,6 +15,9 @@
             <item
                 android:id="@+id/action_sort_by_rating"
                 android:title="@string/sort_by_rating"/>
+            <item
+                android:id="@+id/action_get_favorites"
+                android:title="@string/get_favorite" />
 
         </menu>
 

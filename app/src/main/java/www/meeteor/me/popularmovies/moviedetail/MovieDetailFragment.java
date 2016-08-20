@@ -3,6 +3,8 @@ package www.meeteor.me.popularmovies.moviedetail;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,15 +27,15 @@ import www.meeteor.me.popularmovies.util.Constants;
 public class MovieDetailFragment extends Fragment {
     public static final String TAG = "detail_fragment";
     private static final String ARG_PARAM = "Movie";
-    private Movie movie;
-
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.movie_title) TextView movieTitle;
     @Bind(R.id.movie_overview) TextView movieOverview;
     @Bind(R.id.movie_rating) RatingBar movieRating;
     @Bind(R.id.movie_release_date) TextView movieReleaseDate;
     @Bind(R.id.backdrop_poster) ImageView movieBackdropPoster;
-
+    @Bind(R.id.fab)
+    FloatingActionButton mFab;
+    private Movie movie;
 
     public static MovieDetailFragment newInstance(Movie movie) {
         MovieDetailFragment movieDetailFragment = new MovieDetailFragment();
@@ -49,6 +51,15 @@ public class MovieDetailFragment extends Fragment {
         if(getArguments() != null){
             movie = getArguments().getParcelable(ARG_PARAM);
         }
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
     }
 
     @Override

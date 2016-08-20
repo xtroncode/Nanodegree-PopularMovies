@@ -5,8 +5,8 @@
     <string name="backdrop_poster">Backdrop Poster</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="sort_by">Sort by</string>
     <string name="sort_by_popularity">Most Popular</string>
     <string name="sort_by_rating">Top Rated</string>
+    <string name="get_favorite">Favorites</string>
 </resources>
