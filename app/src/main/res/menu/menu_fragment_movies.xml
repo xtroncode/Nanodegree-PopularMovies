@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_sort_by"
+        android:title="Most Popular"
+        app:showAsAction="always"></item>
+    <item
         android:id="@+id/action_sortBy"
         android:icon="@drawable/ic_filter_list_black_24dp"
         android:title="@string/sort_by"
@@ -10,17 +14,17 @@
         <menu>
             <item
                 android:id="@+id/action_sort_by_popularity"
-                android:checked="true"
+
                 android:title="@string/sort_by_popularity"/>
             <item
                 android:id="@+id/action_sort_by_rating"
                 android:title="@string/sort_by_rating"/>
             <item
-                android:id="@+id/action_get_favorites"
-                android:title="@string/get_favorite" />
+                android:id="@+id/action_sort_by_favorites"
+                android:checked="true"
+                android:title="@string/sort_by_favorite" />
 
         </menu>
-
 
     </item>
 

@@ -8,5 +8,7 @@
     <string name="sort_by">Sort by</string>
     <string name="sort_by_popularity">Most Popular</string>
     <string name="sort_by_rating">Top Rated</string>
-    <string name="get_favorite">Favorites</string>
+    <string name="sort_by_favorite">Favorites</string>
+    <string name="movie_video">Videos</string>
+    <string name="movie_review">Reviews</string>
 </resources>

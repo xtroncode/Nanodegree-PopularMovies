@@ -22,9 +22,10 @@
     </android.support.design.widget.AppBarLayout>
 
     <fragment
-        android:name="www.meeteor.me.popularmovies.movies.MoviesFragment"
         android:id="@+id/poster_fragment_container"
+        android:name="www.meeteor.me.popularmovies.movies.MoviesFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:layout="@layout/poster_fragment" />
 
 </android.support.design.widget.CoordinatorLayout>

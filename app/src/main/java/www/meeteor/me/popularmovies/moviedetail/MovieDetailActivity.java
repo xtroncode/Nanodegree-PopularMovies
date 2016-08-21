@@ -7,6 +7,8 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -18,12 +20,26 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import www.meeteor.me.popularmovies.R;
 import www.meeteor.me.popularmovies.data.Movie;
 import www.meeteor.me.popularmovies.data.MovieContract;
+import www.meeteor.me.popularmovies.data.Video;
+import www.meeteor.me.popularmovies.network.MovieDBService;
 import www.meeteor.me.popularmovies.util.Constants;
+import www.meeteor.me.popularmovies.util.Util;
 
 /**
  * Created by meet on 30/3/16.
@@ -38,6 +54,12 @@ public class MovieDetailActivity extends AppCompatActivity {
     @Bind(R.id.collapsing_toolbar) CollapsingToolbarLayout mCollapsingToolbar;
     @Bind(R.id.fab)
     FloatingActionButton mFab;
+    @Bind(R.id.videos_rv)
+    RecyclerView mVideosRV;
+
+    private ArrayList<Video> mVideoList;
+    private VideosRVAdapter videosRVAdapter;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,7 +76,10 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
         final Movie movie = getIntent().getParcelableExtra("Movie");
-
+        mVideoList = new ArrayList<Video>();
+        videosRVAdapter = new VideosRVAdapter(mVideoList, this);
+        mVideosRV.setAdapter(videosRVAdapter);
+        mVideosRV.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
         setUpDetailUI(movie);
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -106,12 +131,91 @@ public class MovieDetailActivity extends AppCompatActivity {
         movieRating.setRating(voteAverage);
         String releaseDate = "Release date: "+ movie.getReleaseDate();
         movieReleaseDate.setText(releaseDate);
+        showMovieVideos(movie.getId());
+        showMovieReviews(movie.getId());
         movie.isFavorite = getContentResolver().query(MovieContract.MovieEntry.buildMovieUri(movie.getId()), null, null, null, null).getCount() != 0;
         if (movie.isFavorite) {
             mFab.setImageResource(R.drawable.ic_favorite_red_a700_24dp);
         } else {
             mFab.setImageResource(R.drawable.ic_favorite_border_white_24dp);
         }
+    }
+
+    private void showMovieVideos(int movieId) {
+        if (Util.isNetworkConnected(getApplicationContext())) {
+            MovieDBService service = MovieDBService.retrofit.create(MovieDBService.class);
+            Call<ResponseBody> call = service.getMovieVideos(movieId, Constants.MOVIEDB_API_KEY);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+
+                        JSONObject rObj = new JSONObject(response.body().string());
+                        Log.d("obj", rObj.toString());
+                        populateVideos(rObj.getJSONArray("results"));
+                    } catch (IOException | JSONException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.d("response", t.toString());
+                }
+            });
+
+
+        } else {
+        }
+    }
+
+
+    private void showMovieReviews(int movieId) {
+        if (Util.isNetworkConnected(getApplicationContext())) {
+            MovieDBService service = MovieDBService.retrofit.create(MovieDBService.class);
+            Call<ResponseBody> call = service.getMovieReviews(movieId, Constants.MOVIEDB_API_KEY);
+            call.enqueue(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    try {
+
+                        JSONObject rObj = new JSONObject(response.body().string());
+                        Log.d("obj", rObj.toString());
+                        populateReviews(rObj.getJSONArray("results"));
+                    } catch (IOException | JSONException | NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    Log.d("response", t.toString());
+                }
+            });
+
+
+        } else {
+        }
+    }
+
+    private void populateVideos(JSONArray results) {
+        Log.d("Videos", results.toString());
+        if (results != null) {
+            for (int i = 0; i < results.length(); i++) {
+                try {
+                    mVideoList.add(new Video(results.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            videosRVAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void populateReviews(JSONArray results) {
+        Log.d("Reviews", results.toString());
     }
 
 

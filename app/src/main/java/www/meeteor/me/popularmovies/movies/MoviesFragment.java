@@ -62,6 +62,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     private ArrayList<Movie> mMovieList;
     private MoviesRVAdapter moviesRVAdapter;
     private View view;
+    private Menu menu;
     private String SORT_PARAMETER = "popular";
 
     public static MoviesFragment newInstance(){
@@ -147,12 +148,13 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_fragment_movies, menu);
+        this.menu = menu;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
+        menu.getItem(0).setTitle(item.getTitle());
         if (id == R.id.action_sort_by_popularity) {
             SORT_PARAMETER = "popular";
             resetMovieList();
@@ -165,7 +167,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             return true;
         }
 
-        if (id == R.id.action_get_favorites) {
+        if (id == R.id.action_sort_by_favorites) {
             SORT_PARAMETER = "favorite";
             resetMovieList();
             return true;
