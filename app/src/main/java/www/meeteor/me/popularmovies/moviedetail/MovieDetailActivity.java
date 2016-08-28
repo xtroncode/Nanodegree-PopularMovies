@@ -36,6 +36,7 @@ import retrofit2.Response;
 import www.meeteor.me.popularmovies.R;
 import www.meeteor.me.popularmovies.data.Movie;
 import www.meeteor.me.popularmovies.data.MovieContract;
+import www.meeteor.me.popularmovies.data.Review;
 import www.meeteor.me.popularmovies.data.Video;
 import www.meeteor.me.popularmovies.network.MovieDBService;
 import www.meeteor.me.popularmovies.util.Constants;
@@ -56,10 +57,13 @@ public class MovieDetailActivity extends AppCompatActivity {
     FloatingActionButton mFab;
     @Bind(R.id.videos_rv)
     RecyclerView mVideosRV;
+    @Bind(R.id.reviews_rv)
+    RecyclerView mReviewsRV;
 
     private ArrayList<Video> mVideoList;
+    private ArrayList<Review> mReviewList;
     private VideosRVAdapter videosRVAdapter;
-
+    private ReviewsRVAdapter reviewsRVAdapter;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -77,9 +81,13 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         final Movie movie = getIntent().getParcelableExtra("Movie");
         mVideoList = new ArrayList<Video>();
+        mReviewList = new ArrayList<Review>();
         videosRVAdapter = new VideosRVAdapter(mVideoList, this);
+        reviewsRVAdapter = new ReviewsRVAdapter(mReviewList, this);
         mVideosRV.setAdapter(videosRVAdapter);
+        mReviewsRV.setAdapter(reviewsRVAdapter);
         mVideosRV.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        mReviewsRV.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         setUpDetailUI(movie);
 
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -151,7 +159,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                     try {
 
                         JSONObject rObj = new JSONObject(response.body().string());
-                        Log.d("obj", rObj.toString());
                         populateVideos(rObj.getJSONArray("results"));
                     } catch (IOException | JSONException | NullPointerException e) {
                         e.printStackTrace();
@@ -181,7 +188,6 @@ public class MovieDetailActivity extends AppCompatActivity {
                     try {
 
                         JSONObject rObj = new JSONObject(response.body().string());
-                        Log.d("obj", rObj.toString());
                         populateReviews(rObj.getJSONArray("results"));
                     } catch (IOException | JSONException | NullPointerException e) {
                         e.printStackTrace();
@@ -201,7 +207,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void populateVideos(JSONArray results) {
-        Log.d("Videos", results.toString());
+
         if (results != null) {
             for (int i = 0; i < results.length(); i++) {
                 try {
@@ -215,7 +221,18 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     private void populateReviews(JSONArray results) {
-        Log.d("Reviews", results.toString());
+
+
+        if (results != null) {
+            for (int i = 0; i < results.length(); i++) {
+                try {
+                    mReviewList.add(new Review(results.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            reviewsRVAdapter.notifyDataSetChanged();
+        }
     }
 
 
@@ -245,4 +262,5 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
+
 }

@@ -1,6 +1,8 @@
 package www.meeteor.me.popularmovies.moviedetail;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +24,6 @@ public class VideosRVAdapter extends RecyclerView.Adapter<VideosRVAdapter.ViewHo
 
     private ArrayList<Video> mVideos;
     private Context mContext;
-
     public VideosRVAdapter(ArrayList<Video> videos, Context context) {
         mVideos = videos;
         mContext = context;
@@ -48,7 +49,7 @@ public class VideosRVAdapter extends RecyclerView.Adapter<VideosRVAdapter.ViewHo
         return mVideos.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public TextView videoTitle;
         public ImageView videoImage;
 
@@ -57,6 +58,15 @@ public class VideosRVAdapter extends RecyclerView.Adapter<VideosRVAdapter.ViewHo
 
             videoImage = (ImageView) itemView.findViewById(R.id.video_image);
             videoTitle = (TextView) itemView.findViewById(R.id.video_title);
+            itemView.setOnClickListener(this);
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            int position = getLayoutPosition();
+            Video video = mVideos.get(position);
+            mContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" + video.getKey())));
         }
     }
 }
