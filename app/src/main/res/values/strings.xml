@@ -6,7 +6,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="sort_by">Sort by</string>
-    <string name="sort_by_popularity">Most Popular</string>
+    <string name="sort_by_popularity">Popular</string>
     <string name="sort_by_rating">Top Rated</string>
     <string name="sort_by_favorite">Favorites</string>
     <string name="movie_video">Videos</string>

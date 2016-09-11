@@ -12,6 +12,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
  *
  */
 public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnScrollListener {
+    RecyclerView.LayoutManager mLayoutManager;
     // The minimum amount of items to have below your current scroll position
     // before loading more.
     private int visibleThreshold = 5;
@@ -21,8 +22,6 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
     private int previousTotalItemCount = 0;
     // True if we are still waiting for the last set of data to load.
     private boolean loading = true;
-
-    RecyclerView.LayoutManager mLayoutManager;
 
     public EndlessRecyclerViewScrollListener(LinearLayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
@@ -60,7 +59,7 @@ public abstract class EndlessRecyclerViewScrollListener extends RecyclerView.OnS
 
         int lastVisibleItemPosition = 0;
         int totalItemCount = mLayoutManager.getItemCount();
-
+        currentPage = totalItemCount / 20;
         if (mLayoutManager instanceof StaggeredGridLayoutManager) {
             int[] lastVisibleItemPositions = ((StaggeredGridLayoutManager) mLayoutManager).findLastVisibleItemPositions(null);
             // get maximum element within the list

@@ -79,10 +79,12 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setRetainInstance(true);
+        // setRetainInstance(true);
 
         if (savedInstanceState != null) {
+            SORT_PARAMETER = savedInstanceState.getString("StateSort");
             ArrayList<Movie> arrayList = savedInstanceState.getParcelableArrayList("StateMovies");
+            mMovieList.clear();
             mMovieList.addAll(arrayList);
             populateRecyclerView();
             Log.d("ONE", "Exec");
@@ -105,7 +107,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         ButterKnife.bind(this, view);
 
         int numOfColumns = getResources().getInteger(R.integer.num_of_columns);
-
+        mProgressBar.setVisibility(View.GONE);
         moviesRVAdapter = new MoviesRVAdapter(mMovieList, movieItemListener);
         if (mMoviesRV != null) {
 
@@ -127,7 +129,8 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
             public void onLoadMore(int page, int totalItemsCount) {
 
                 try {
-                    Log.d("PAGE", Integer.toString(page));
+                    //Log.d("PAGE", Integer.toString(page));
+                    //Log.d("ItemCount", Integer.toString(totalItemsCount));
                     getMovies(page);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -149,6 +152,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_fragment_movies, menu);
         this.menu = menu;
+        menu.getItem(0).setTitle(SORT_PARAMETER.replace("_", " "));
     }
 
     @Override
@@ -168,7 +172,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
         }
 
         if (id == R.id.action_sort_by_favorites) {
-            SORT_PARAMETER = "favorite";
+            SORT_PARAMETER = "favorites";
             resetMovieList();
             return true;
         }
@@ -180,6 +184,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("StateMovies", mMovieList);
+        outState.putString("StateSort", SORT_PARAMETER);
     }
 
     public void handleAsyncResponse(JSONArray jsonArray) {
@@ -222,7 +227,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
                 favoriteMovieList.add(movie);
             } while (data.moveToNext());
         }
-        if (SORT_PARAMETER.equals("favorite")) {
+        if (SORT_PARAMETER.equals("favorites")) {
             mMovieList.clear();
             mMovieList.addAll(favoriteMovieList);
             populateRecyclerView();
@@ -241,32 +246,30 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void getMovies(final int page) throws IOException {
 
-        mProgressBar.setVisibility(View.VISIBLE);
-        if (Util.isNetworkConnected(getContext())) {
-            // GetMoviesTask getMoviesTask = new GetMoviesTask(this,SORT_PARAMETER);
-            //getMoviesTask.execute(page);
-            MovieDBService service = MovieDBService.retrofit.create(MovieDBService.class);
-            Call<ResponseBody> call = service.getMovies(SORT_PARAMETER, Constants.MOVIEDB_API_KEY, page);
-            call.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    try {
 
-                        JSONObject rObj = new JSONObject(response.body().string());
-                        handleAsyncResponse(rObj.getJSONArray("results"));
-                    } catch (IOException | JSONException | NullPointerException e) {
-                        e.printStackTrace();
+        if (Util.isNetworkConnected(getContext())) {
+            if ((SORT_PARAMETER.equals("popular") || SORT_PARAMETER.equals("top_rated"))) {
+                mProgressBar.setVisibility(View.VISIBLE);
+                MovieDBService service = MovieDBService.retrofit.create(MovieDBService.class);
+                Call<ResponseBody> call = service.getMovies(SORT_PARAMETER, Constants.MOVIEDB_API_KEY, page);
+                call.enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        try {
+
+                            JSONObject rObj = new JSONObject(response.body().string());
+                            handleAsyncResponse(rObj.getJSONArray("results"));
+                        } catch (IOException | JSONException | NullPointerException e) {
+                            e.printStackTrace();
+                        }
                     }
 
-
-                }
-
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Log.d("response", t.toString());
-                }
-            });
-
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        Log.d("response", t.toString());
+                    }
+                });
+            }
 
         } else {
 
@@ -287,7 +290,7 @@ public class MoviesFragment extends Fragment implements LoaderManager.LoaderCall
 
     private void resetMovieList() {
         mMovieList.clear();
-        if (SORT_PARAMETER != "favorite") {
+        if (SORT_PARAMETER != "favorites") {
             try {
                 mMoviesRV.clearOnScrollListeners();
                 mMoviesRV.addOnScrollListener(getScrollListener((GridLayoutManager) mMoviesRV.getLayoutManager()));

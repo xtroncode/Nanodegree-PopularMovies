@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_sort_by"
-        android:title="Most Popular"
+        android:title="@string/sort_by_popularity"
         app:showAsAction="always"></item>
     <item
         android:id="@+id/action_sortBy"
@@ -14,14 +14,12 @@
         <menu>
             <item
                 android:id="@+id/action_sort_by_popularity"
-
                 android:title="@string/sort_by_popularity"/>
             <item
                 android:id="@+id/action_sort_by_rating"
                 android:title="@string/sort_by_rating"/>
             <item
                 android:id="@+id/action_sort_by_favorites"
-                android:checked="true"
                 android:title="@string/sort_by_favorite" />
 
         </menu>
